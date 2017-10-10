@@ -59,7 +59,7 @@ variable "vpc_config" {
 }
 
 variable "alias" {
-  default "RELEASE"
+  default = "RELEASE"
 }
 
 resource "aws_iam_role" "lambda_iam_role" {
