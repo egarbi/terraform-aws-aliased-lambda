@@ -23,6 +23,9 @@ variable "function_name" {
   type = "string"
 }
 
+variable "environment" {
+}
+
 variable "description" {
   type = "string"
   default = ""
@@ -55,16 +58,8 @@ variable "vpc_config" {
   }
 }
 
-variable "aliases" {
-  type = "map"
-  default = {
-    prod = "PRODUCTION"
-    test = "TEST"
-  }
-}
-
 resource "aws_iam_role" "lambda_iam_role" {
-  name = "${var.function_name}_${terraform.env}_iam_role"
+  name = "${var.function_name}_${var.environment}"
 
   assume_role_policy = <<EOF
 {
@@ -124,7 +119,7 @@ resource "aws_s3_bucket_object" "object" {
 resource "aws_lambda_function" "lambda" {
   s3_bucket     = "${aws_s3_bucket_object.object.bucket}"
   s3_key        = "${aws_s3_bucket_object.object.key}"
-  function_name = "${var.function_name}"
+  function_name = "${var.function_name}-${var.environment}"
   role          = "${aws_iam_role.lambda_iam_role.arn}"
   handler       = "${var.handler}"
   runtime       = "${var.runtime}"
@@ -149,9 +144,9 @@ data "external" "alias" {
 }
 
 resource "aws_lambda_alias" "lambda_alias" {
-  name             = "${lookup(var.aliases, terraform.env, upper(terraform.env))}"
+  name             = "RELEASE"
   function_name    = "${aws_lambda_function.lambda.arn}"
-  function_version = "${lookup(data.external.alias.result, lookup(var.aliases, terraform.env, upper(terraform.env)), aws_lambda_function.lambda.version)}"
+  function_version = "${lookup(data.external.alias.result, "RELEASE", aws_lambda_function.lambda.version)}"
 }
 
 resource "null_resource" "publisher" {
