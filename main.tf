@@ -58,6 +58,10 @@ variable "vpc_config" {
   }
 }
 
+variable "alias" {
+  default "RELEASE"
+}
+
 resource "aws_iam_role" "lambda_iam_role" {
   name = "${var.function_name}_${var.environment}"
 
@@ -144,9 +148,9 @@ data "external" "alias" {
 }
 
 resource "aws_lambda_alias" "lambda_alias" {
-  name             = "RELEASE"
+  name             = "${var.alias}"
   function_name    = "${aws_lambda_function.lambda.arn}"
-  function_version = "${lookup(data.external.alias.result, "RELEASE", aws_lambda_function.lambda.version)}"
+  function_version = "${lookup(data.external.alias.result, var.alias, aws_lambda_function.lambda.version)}"
 }
 
 resource "null_resource" "publisher" {
