@@ -3,6 +3,9 @@ AWS Lambda function Terraform module
 
 Terraform module wich creates a Lambda Function with VPC support in AWS
 
+> Note: All credits go here for https://github.com/adampolomski from I took this module.
+> I have just modufied it for my need:wq!s
+
 Usage
 -----
 
