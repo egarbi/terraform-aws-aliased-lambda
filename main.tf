@@ -67,7 +67,7 @@ variable "alias" {
 }
 
 resource "aws_iam_role" "lambda_iam_role" {
-  name = "${var.function_name}_${var.environment}"
+  name = "${var.function_name}-${var.environment}"
 
   assume_role_policy = <<EOF
 {
