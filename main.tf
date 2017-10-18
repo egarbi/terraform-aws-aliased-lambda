@@ -10,6 +10,10 @@ variable "build_path" {
   type = "string"
 }
 
+variable "dead_letter_arn" {
+  default = ""
+}
+
 variable "function_variables" {
   type = "map"
   default = {foo = "bar"}
@@ -132,6 +136,10 @@ resource "aws_lambda_function" "lambda" {
   description   = "${var.description}"
   publish = false
   source_code_hash = "${base64sha256(file(var.build_path))}"
+
+  dead_letter_config {
+    target_arn = "${var.dead_letter_arn}"
+  }
 
   vpc_config {
       security_group_ids = [ "${var.vpc_config["security_group_ids"]}" ]
